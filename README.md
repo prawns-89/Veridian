@@ -1,4 +1,4 @@
-# Mission Veridian: Gravity-Assist Trajectory Design
+# Mission Veridian: Gravity-Assist Trajectory
 
 **Course:** Flight and Space Mechanics (R5ME2206T)  
 **Institute:** VJTI Mumbai — Second-Year Aerospace Engineering MDM, Semester IV (2025-26)
@@ -7,111 +7,47 @@
 
 ## Overview
 
-This repository implements a full gravity-assist trajectory design pipeline for the fictional Veridian exoplanetary system. The mission departs from **Caelus** (Earth-analogue), performs a gravity-assist flyby at **Ventus** (gas giant), and achieves rendezvous with **Glacia** (ice giant destination).
-
-The pipeline uses the **patched-conic approximation** and solves **Lambert's problem** (universal variable formulation) to search over thousands of launch windows and identify the optimal trajectory.
+This repository implements the full mathematical gravity-assist trajectory pipeline design for the Veridian system. The module calculates patched conics to navigate our theoretical spacecraft from a circular Caelus parking orbit, performing a gravity-assist flyby on Ventus, before matching relative velocities with Glacia (`M_INITIAL=2500kg`, `max_dv=1.5 km/s`).
 
 ---
 
-## Repository Structure
+## Operating Instructions
 
-```
-Veridian/
-├── README.md
-├── requirements.txt
-├── .gitignore
-├── main.py                        # Entry point — runs the full pipeline
-│
-├── src/
-│   ├── __init__.py
-│   ├── constants.py               # All physical constants & system parameters
-│   ├── ephemeris.py               # Ephemeris loader & Keplerian propagator
-│   ├── lambert.py                 # Lambert solver (universal variable method)
-│   ├── gravity_assist.py          # Gravity-assist flyby model
-│   ├── delta_v.py                 # ΔV calculations (departure, arrival, DSM)
-│   └── search.py                  # Launch window search & optimisation
-│
-├── data/
-│   ├── veridian_ephemeris.csv     # Provided heliocentric ephemeris (MJD 60000–63650)
-│   └── optimal_trajectory.csv    # Output: best trajectory parameters
-│
-├── notebooks/
-│   ├── 01_verification.ipynb      # Lambert solver verification (Hohmann test case)
-│   ├── 02_porkchop.ipynb          # Pork-chop plot & launch window analysis
-│   └── 03_optimal_trajectory.ipynb# Final trajectory visualisation & report figures
-│
-├── results/
-│   ├── porkchop_plot.png          # ΔV vs departure date & TOF to Ventus
-│   ├── heliocentric_trajectory.png# Optimal heliocentric path
-│   └── velocity_diagram_ventus.png# Velocity vectors at the Ventus flyby
-│
-└── report/
-    └── mission_report.pdf         # Final 5-page mission report
-```
+### 1. Requirements
 
----
-
-## Quick Start
-
-### 1. Install dependencies
-
+Initialise your environment and install strict dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Place the ephemeris file
+### 2. Search & Simulation (`main.py`)
 
-Copy `veridian_ephemeris.csv` into the `data/` directory.
-
-### 3. Run the full pipeline
+To initiate the nested parameter search loops iterating through thousands of variations of Departure Times (*MJD 60000 - 61095*) and Times-of-Flight (*200 - 800 Days*) bounded by physical limits (`Ventus Flyby > 2000 km altitude`, etc.):
 
 ```bash
 python main.py
 ```
+*Outputs optimal constraints to: `data/optimal_trajectory.csv`*
 
-This will:
-- Load the ephemeris
-- Verify the Lambert solver against the Hohmann test case
-- Run the coarse + fine launch window search
-- Save the optimal trajectory to `data/optimal_trajectory.csv`
-- Generate all plots in `results/`
+### 3. Visual Simulation (`animate_simulation.py`)
 
-### 4. Explore interactively
+To generate a full topological animation of the Caelus $\rightarrow$ Ventus $\rightarrow$ Glacia ephemeris parameters mapping standard orbital mechanic alignments directly from data points:
+```bash
+python animate_simulation.py
+```
+*Outputs compiled GIF file `results/planetary_simulation.gif`.*
 
-Open the notebooks in order:
+### 4. Notebooks (Visualisations & Verification)
+
+Load the Jupyter Notebook server:
 ```bash
 jupyter notebook notebooks/
 ```
 
----
+- **`01_verification.ipynb`**: Demonstrates precision testing of our Universal Variables `Lambert` formulation solver against analytical baseline equations.
+- **`02_porkchop.ipynb`**: Parses grid search parameters into standard $\Delta V$ contour visualizations for the initial window search.
+- **`03_optimal_trajectory.ipynb`**: Extracts the generated Caelus $\rightarrow$ Ventus $\rightarrow$ Glacia path for heliocentric comparisons.
 
-## Mission Parameters
+### 5. Mathematical Methodology & Report
 
-| Parameter | Value |
-|---|---|
-| Departure orbit | Circular, 500 km altitude above Caelus |
-| Initial mass | 2500 kg |
-| Propulsion Isp | 300 s (bipropellant chemical) |
-| Max ΔV budget | 1.5 km/s |
-| Max mission duration | 8 years (2922 days) |
-| Ventus min flyby altitude | 2000 km above cloud tops |
-| Thermal constraint | > 0.4 AU from Veridian |
-
----
-
-## Deliverables Checklist
-
-- [ ] Lambert solver with Hohmann verification
-- [ ] Gravity-assist model (`gravity_assist.py`)
-- [ ] Launch window search (pork-chop plot)
-- [ ] Optimal trajectory parameters saved to `data/optimal_trajectory.csv`
-- [ ] Three result plots in `results/`
-- [ ] 5-page mission report in `report/`
-
----
-
-## References
-
-1. GTOC 13 Problem Statement — NASA JPL, 2025
-2. Lantukh, D.V. — *Preliminary design of spacecraft trajectories*, UT Austin, 2015
-3. Spacecraft Orbital Mechanics (SESA6076) — University of Southampton, 2026
+The methodological descriptions, equations, interpretation, and structural breakdown of the analysis has been compiled inside `report/mission_report.md`. Use any standard markdown-to-pdf converter (e.g. `pandoc` or `mdpdf`) to render it as a continuous PDF if required!
