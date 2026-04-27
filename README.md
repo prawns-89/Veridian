@@ -1,8 +1,5 @@
 # Mission Veridian: Gravity-Assist Trajectory
 
-**Course:** Flight and Space Mechanics (R5ME2206T)  
-**Institute:** VJTI Mumbai — Second-Year Aerospace Engineering MDM, Semester IV (2025-26)
-
 ---
 
 ## Overview
